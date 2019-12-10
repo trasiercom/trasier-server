@@ -1,5 +1,7 @@
 = Trasier Server
 
+image:https://travis-ci.org/trasier/trasier-server.svg?branch=master["Build Status", link="https://travis-ci.org/trasier/trasier-server"]
+
 == Build with Gradle
 
 Use the following command to build _Trasier Server_:
