@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $TRAVIS_BRANCH != "master" ] || [ $TRAVIS_PULL_REQUEST = "false" ]; then
+if [ $TRAVIS_BRANCH != "master" ] || [ $TRAVIS_PULL_REQUEST = "true" ]; then
   echo "We're not on the master branch, skipping docker deployment."
   exit 0
 fi
