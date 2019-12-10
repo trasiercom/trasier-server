@@ -1,0 +1,22 @@
+= Trasier Server
+
+== Build with Gradle
+
+Use the following command to build _Trasier Server_:
+
+    ./gradlew assemble
+
+On success, the result will be available in the `build/libs` directory.
+
+== Run _Trasier Server_
+
+Run the application:
+
+ ./gradlew run
+
+
+== Test _Trasier Server_
+
+Test the application:
+
+  ./gradlew test
