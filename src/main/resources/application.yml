@@ -1,3 +1,13 @@
 micronaut:
   application:
     name: trasier-server
+
+trasier.elastic:
+  namespace: default
+  hosts:
+    - localhost
+  port: 9200
+  scheme: http
+  index: default
+  type: event
+  cluster-name: default

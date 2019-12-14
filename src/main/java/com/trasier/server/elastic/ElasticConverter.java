@@ -1,28 +1,25 @@
 package com.trasier.server.elastic;
 
-import com.trasier.api.Endpoint;
-import com.trasier.api.Span;
+import com.trasier.api.server.model.Endpoint;
+import com.trasier.api.server.model.Span;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
 
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Calendar;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+@Singleton
 public class ElasticConverter {
     private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    private final ElasticDataConverter dataConverter;
-
-    public ElasticConverter(ElasticDataConverter dataConverter) {
-        this.dataConverter = dataConverter;
-    }
-
     public static Span convert(SearchHit searchHit) {
-        Span.Builder builder = Span.newSpan();
+        Span.SpanBuilder builder = Span.builder();
 
         builder.id(searchHit.getSourceAsMap().get("spanId").toString());
         builder.traceId(searchHit.getSourceAsMap().get("traceId").toString());
@@ -31,10 +28,10 @@ public class ElasticConverter {
         builder.name(searchHit.getSourceAsMap().get("name").toString());
 
         if (searchHit.getSourceAsMap().get("incomingEndpoint.name") != null) {
-            builder.incomingEndpoint(Endpoint.newEndpoint().name(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString()).build());
+            builder.incomingEndpoint(Endpoint.builder().name(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString()).build());
         }
         if (searchHit.getSourceAsMap().get("outgoingEndpoint.name") != null) {
-            builder.outgoingEndpoint(Endpoint.newEndpoint().name(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString()).build());
+            builder.outgoingEndpoint(Endpoint.builder().name(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString()).build());
         }
 
         if (searchHit.getSourceAsMap().get("parentSpanId") != null) {
@@ -99,11 +96,11 @@ public class ElasticConverter {
             }
 
             if (span.getIncomingData() != null) {
-                builder.field("incomingData", dataConverter.removeMarkup(span.getIncomingContentType(), span.getIncomingData()));
+                builder.field("incomingData", new String(Base64.getDecoder().decode(span.getIncomingData())));
             }
 
             if (span.getOutgoingData() != null) {
-                builder.field("outgoingData", dataConverter.removeMarkup(span.getOutgoingContentType(), span.getOutgoingData()));
+                builder.field("outgoingData", new String(Base64.getDecoder().decode(span.getOutgoingData())));
             }
 
             return builder.endObject();
