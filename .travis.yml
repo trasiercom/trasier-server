@@ -1,22 +1,29 @@
 language: java
 sudo: false
 install: true
+
 services:
 - docker
+
 jdk:
 - oraclejdk11
+
 script:
-- "./gradlew assemble"
+  - "./gradlew assemble"
+
 after_success:
 - "./deploy-to-docker.sh"
+
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
   - "$HOME/.m2/repository/"
+
 env:
   global:
   - secure: jo+uI/7AEIkAWGvw+FxDTc3Ki/+MOql92qGS3hub+immq8NHrV2y7FUHtyUSFJ88cHawQVX7/o0qdhdIOEwvGvxeRyPUlxrZmkr5qVJuRVg/npitQUF9xGGX9xj5RAmKeuwDbEoldbFUGh41zGyFuPRmFnu6ExDV8dwT+cOqkE7YVDrVQgYq12OeZgaApfqtzjMjBiatbPzXOQb5IMlZG9peebVOl1KPUzqW1gHzMDhgmT8QuJCaflfhX2JAzALYwS7msMJJiiy5GMZK9dD8NyvSXlOOCzl8GKyp9oHKhama5ywxZaWJw3aFLR0RaNnxafJ4+KU5G3Ev5CV93Akpmddba1bOO4RzSTE1xRQz216NpKBe2a2+dq663ZbN43Sc3jDuOYzYECr1BF9FM6oufwl2I/NbTelfmfziRf9JRFMrREV4IgsBG62TVblDNaOoZvYjRd8MdaPHKiTLpsUg+fI2LOq7sU83yazsJsslbyswc9g2G97H9tJ7VxziBJvSUAl5C3i9HaQHFePTxadKTdXJVMkGThbB4MqE29TYj4KVnE4gBdF8U32k6r67ly7Es9aL8vU8+fhGjuDv6nF+ydmjh5l1OnFDCUIGqpGrUFlgqGJhS5fT7R0DOlAcse+nSrGziMzo1lrpqMaOCIxqxSj5OGzWMbn/J0+oh6LH6OU=
