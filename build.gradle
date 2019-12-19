@@ -4,14 +4,12 @@ plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
 }
 
-
-
 version "0.1"
 group "com.trasier.server"
 
 repositories {
     mavenCentral()
-    maven { url "https://jcenter.bintray.com" }
+    jcenter()
 }
 
 configurations {
@@ -46,7 +44,7 @@ dependencies {
 test.classpath += configurations.developmentOnly
 
 mainClassName = "com.trasier.server.Application"
-// use JUnit 5 platform
+
 test {
     useJUnitPlatform()
 }
