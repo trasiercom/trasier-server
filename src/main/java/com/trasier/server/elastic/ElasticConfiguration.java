@@ -10,7 +10,6 @@ public class ElasticConfiguration {
     private String scheme;
     private String index;
     private String type;
-    private String clusterName;
 
     public String getNamespace() {
         return namespace;
@@ -50,14 +49,6 @@ public class ElasticConfiguration {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getClusterName() {
-        return clusterName;
-    }
-
-    public void setClusterName(String clusterName) {
-        this.clusterName = clusterName;
     }
 
     public String getScheme() {
