@@ -4,14 +4,12 @@ plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
 }
 
-
-
 version "0.1"
 group "com.trasier.server"
 
 repositories {
     mavenCentral()
-    maven { url "https://jcenter.bintray.com" }
+    jcenter()
 }
 
 configurations {
@@ -31,6 +29,9 @@ dependencies {
     implementation "io.micronaut:micronaut-validation"
     implementation "io.micronaut:micronaut-runtime"
     implementation "io.micronaut:micronaut-http-server-netty"
+    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:6.4.3"
+    implementation "com.trasier:trasier-server-api:1.0.0"
+    implementation "org.apache.commons:commons-lang3:3.3.1"
     runtimeOnly "ch.qos.logback:logback-classic:1.2.3"
     testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
@@ -43,7 +44,7 @@ dependencies {
 test.classpath += configurations.developmentOnly
 
 mainClassName = "com.trasier.server.Application"
-// use JUnit 5 platform
+
 test {
     useJUnitPlatform()
 }
