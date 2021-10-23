@@ -3,15 +3,11 @@ package com.trasier.server.controller;
 import com.trasier.api.server.model.ConversationInfo;
 import com.trasier.api.server.model.Span;
 import com.trasier.api.server.service.ReadService;
-import com.trasier.api.server.service.WriteService;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
-import io.micronaut.http.annotation.RequestAttribute;
 
 import java.util.List;
 
@@ -51,7 +47,5 @@ public class ReadController {
             @QueryValue("to") Long to) {
         return readService.findByQuery(accountId, spaceKey, query, from, to);
     }
-
-
 
 }
