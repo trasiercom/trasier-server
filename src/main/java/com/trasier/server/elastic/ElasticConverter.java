@@ -1,10 +1,14 @@
 package com.trasier.server.elastic;
 
+import com.trasier.api.server.model.Endpoint;
 import com.trasier.api.server.model.Span;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.search.SearchHit;
 
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +18,75 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 @Singleton
 public class ElasticConverter {
+    private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    public static Span convert(SearchHit searchHit) {
+        Span.SpanBuilder builder = Span.builder();
+
+        builder.id(searchHit.getSourceAsMap().get("spanId").toString());
+        builder.traceId(searchHit.getSourceAsMap().get("traceId").toString());
+        builder.conversationId(searchHit.getSourceAsMap().get("conversationId").toString());
+        builder.status(searchHit.getSourceAsMap().get("status").toString());
+        builder.name(searchHit.getSourceAsMap().get("name").toString());
+
+        if (searchHit.getSourceAsMap().get("incomingEndpoint.name") != null) {
+            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString());
+            if (searchHit.getSourceAsMap().get("incomingEndpoint.hostname") != null) {
+                endpointBuilder.hostname(searchHit.getSourceAsMap().get("incomingEndpoint.hostname").toString());
+            }
+            if (searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress") != null) {
+                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress").toString());
+            }
+            if (searchHit.getSourceAsMap().get("incomingEndpoint.port") != null) {
+                endpointBuilder.port(searchHit.getSourceAsMap().get("incomingEndpoint.port").toString());
+            }
+            builder.incomingEndpoint(endpointBuilder.build());
+        }
+        if (searchHit.getSourceAsMap().get("outgoingEndpoint.name") != null) {
+            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString());
+            if (searchHit.getSourceAsMap().get("outgoingEndpoint.hostname") != null) {
+                endpointBuilder.hostname(searchHit.getSourceAsMap().get("outgoingEndpoint.hostname").toString());
+            }
+            if (searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress") != null) {
+                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress").toString());
+            }
+            if (searchHit.getSourceAsMap().get("outgoingEndpoint.port") != null) {
+                endpointBuilder.port(searchHit.getSourceAsMap().get("outgoingEndpoint.port").toString());
+            }
+            builder.outgoingEndpoint(endpointBuilder.build());
+        }
+
+        if (searchHit.getSourceAsMap().get("parentSpanId") != null) {
+            builder.parentId(searchHit.getSourceAsMap().get("parentSpanId").toString());
+        }
+
+        if(searchHit.getSourceAsMap().get("startTimestamp") != null) {
+            try {
+                builder.startTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("startTimestamp").toString()).getTime());
+            } catch (ParseException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        if(searchHit.getSourceAsMap().get("endTimestamp") != null) {
+            try {
+                builder.endTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("endTimestamp").toString()).getTime());
+            } catch (ParseException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        if (searchHit.getSourceAsMap().get("incomingData") != null) {
+            builder.incomingData(searchHit.getSourceAsMap().get("incomingData").toString());
+        }
+
+        if (searchHit.getSourceAsMap().get("outgoingData") != null) {
+            builder.outgoingData(searchHit.getSourceAsMap().get("outgoingData").toString());
+        }
+
+        return builder.build();
+    }
+
     public XContentBuilder convert(String accountId, String spaceKey, Span span) throws IllegalStateException {
         try {
             XContentBuilder builder = jsonBuilder()
