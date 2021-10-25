@@ -1,4 +1,4 @@
-FROM oracle/graalvm-ce:19.2.1 as graalvm
+FROM ghcr.io/graalvm/graalvm-ce:21.3.0 as graalvm
 COPY . /home/app/trasier-server
 WORKDIR /home/app/trasier-server
 RUN ./gradlew assemble
