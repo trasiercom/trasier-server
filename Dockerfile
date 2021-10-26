@@ -3,7 +3,7 @@ COPY . /home/app/trasier-server
 WORKDIR /home/app/trasier-server
 RUN ./gradlew assemble
 RUN gu install native-image
-RUN native-image --no-server -cp build/libs/trasier-server-*-all.jar
+RUN native-image -cp build/libs/trasier-server-*-all.jar
 
 FROM frolvlad/alpine-glibc
 EXPOSE 8080
