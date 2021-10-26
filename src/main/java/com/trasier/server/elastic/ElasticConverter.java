@@ -21,50 +21,48 @@ public class ElasticConverter {
     private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     public static Span convert(SearchHit searchHit) {
-        Span span = new Span();
+        Span.SpanBuilder builder = Span.builder();
 
-        span.setId(searchHit.getSourceAsMap().get("spanId").toString());
-        span.setTraceId(searchHit.getSourceAsMap().get("traceId").toString());
-        span.setConversationId(searchHit.getSourceAsMap().get("conversationId").toString());
-        span.setStatus(searchHit.getSourceAsMap().get("status").toString());
-        span.setName(searchHit.getSourceAsMap().get("name").toString());
+        builder.id(searchHit.getSourceAsMap().get("spanId").toString());
+        builder.traceId(searchHit.getSourceAsMap().get("traceId").toString());
+        builder.conversationId(searchHit.getSourceAsMap().get("conversationId").toString());
+        builder.status(searchHit.getSourceAsMap().get("status").toString());
+        builder.name(searchHit.getSourceAsMap().get("name").toString());
 
         if (searchHit.getSourceAsMap().get("incomingEndpoint.name") != null) {
-            Endpoint endpoint = new Endpoint();
-            endpoint.setName(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString());
+            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString());
             if (searchHit.getSourceAsMap().get("incomingEndpoint.hostname") != null) {
-                endpoint.setHostname(searchHit.getSourceAsMap().get("incomingEndpoint.hostname").toString());
+                endpointBuilder.hostname(searchHit.getSourceAsMap().get("incomingEndpoint.hostname").toString());
             }
             if (searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress") != null) {
-                endpoint.setIpAddress(searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress").toString());
+                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress").toString());
             }
             if (searchHit.getSourceAsMap().get("incomingEndpoint.port") != null) {
-                endpoint.setPort(searchHit.getSourceAsMap().get("incomingEndpoint.port").toString());
+                endpointBuilder.port(searchHit.getSourceAsMap().get("incomingEndpoint.port").toString());
             }
-            span.setIncomingEndpoint(endpoint);
+            builder.incomingEndpoint(endpointBuilder.build());
         }
         if (searchHit.getSourceAsMap().get("outgoingEndpoint.name") != null) {
-            Endpoint endpoint = new Endpoint();
-            endpoint.setName(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString());
+            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString());
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.hostname") != null) {
-                endpoint.setHostname(searchHit.getSourceAsMap().get("outgoingEndpoint.hostname").toString());
+                endpointBuilder.hostname(searchHit.getSourceAsMap().get("outgoingEndpoint.hostname").toString());
             }
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress") != null) {
-                endpoint.setIpAddress(searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress").toString());
+                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress").toString());
             }
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.port") != null) {
-                endpoint.setPort(searchHit.getSourceAsMap().get("outgoingEndpoint.port").toString());
+                endpointBuilder.port(searchHit.getSourceAsMap().get("outgoingEndpoint.port").toString());
             }
-            span.setOutgoingEndpoint(endpoint);
+            builder.outgoingEndpoint(endpointBuilder.build());
         }
 
         if (searchHit.getSourceAsMap().get("parentSpanId") != null) {
-            span.setParentId(searchHit.getSourceAsMap().get("parentSpanId").toString());
+            builder.parentId(searchHit.getSourceAsMap().get("parentSpanId").toString());
         }
 
         if(searchHit.getSourceAsMap().get("startTimestamp") != null) {
             try {
-                span.setStartTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("startTimestamp").toString()).getTime());
+                builder.startTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("startTimestamp").toString()).getTime());
             } catch (ParseException e) {
                 throw new IllegalStateException(e);
             }
@@ -72,21 +70,21 @@ public class ElasticConverter {
 
         if(searchHit.getSourceAsMap().get("endTimestamp") != null) {
             try {
-                span.setEndTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("endTimestamp").toString()).getTime());
+                builder.endTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("endTimestamp").toString()).getTime());
             } catch (ParseException e) {
                 throw new IllegalStateException(e);
             }
         }
 
         if (searchHit.getSourceAsMap().get("incomingData") != null) {
-            span.setIncomingData(searchHit.getSourceAsMap().get("incomingData").toString());
+            builder.incomingData(searchHit.getSourceAsMap().get("incomingData").toString());
         }
 
         if (searchHit.getSourceAsMap().get("outgoingData") != null) {
-            span.setOutgoingData(searchHit.getSourceAsMap().get("outgoingData").toString());
+            builder.outgoingData(searchHit.getSourceAsMap().get("outgoingData").toString());
         }
 
-        return span;
+        return builder.build();
     }
 
     public XContentBuilder convert(String accountId, String spaceKey, Span span) throws IllegalStateException {
