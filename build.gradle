@@ -30,8 +30,8 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.6.1'
     implementation "com.trasier:trasier-server-api:1.0.0"
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'commons-logging:commons-logging:1.2'
     implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation 'org.slf4j:jcl-over-slf4j:1.7.32'
 }
 
 test.classpath += configurations.developmentOnly

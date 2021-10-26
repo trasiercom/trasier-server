@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: trasier-server
+  server:
+    port: 8000
 
 trasier.elastic:
   namespace: default
