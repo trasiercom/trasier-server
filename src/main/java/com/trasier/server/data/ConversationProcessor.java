@@ -43,11 +43,11 @@ public class ConversationProcessor {
     }
 
     private static TraceInfo createTraceInfo(String traceId, List<Span> spans) {
-        TraceInfo.TraceInfoBuilder traceInfoBuilder = TraceInfo.builder();
-        traceInfoBuilder.id(traceId);
+        TraceInfo info = new TraceInfo();
+        info.setId(traceId);
         //TODO Extract Labels
-        traceInfoBuilder.startTimestamp(getStartTimestamp(spans));
-        traceInfoBuilder.endTimestamp(getEndTimestamp(spans));
+        info.setStartTimestamp(getStartTimestamp(spans));
+        info.setEndTimestamp(getEndTimestamp(spans));
 
         List<SpanInfo> parentSpans = spans.stream()
                 .filter(span -> span.getParentId() == null)
@@ -60,8 +60,8 @@ public class ConversationProcessor {
 
         createRecursiveSpans(parentSpans, childSpans);
 
-        traceInfoBuilder.spans(parentSpans);
-        return traceInfoBuilder.build();
+        info.setSpans(parentSpans);
+        return info;
     }
 
     private static Long getStartTimestamp(List<Span> spans) {
@@ -98,28 +98,28 @@ public class ConversationProcessor {
     }
 
     private static ConversationInfo createConversationInfo(String conversationId, List<TraceInfo> traces) {
-        ConversationInfo.ConversationInfoBuilder builder = ConversationInfo.builder();
-        builder.id(conversationId);
-        builder.traces(traces);
-        builder.startTimestamp(traces.get(0).getStartTimestamp());
-        builder.endTimestamp(traces.get(traces.size() - 1).getEndTimestamp());
-        return builder.build();
+        ConversationInfo info = new ConversationInfo();
+        info.setId(conversationId);
+        info.setTraces(traces);
+        info.setStartTimestamp(traces.get(0).getStartTimestamp());
+        info.setEndTimestamp(traces.get(traces.size() - 1).getEndTimestamp());
+        return info;
     }
 
     private static SpanInfo convert(Span span) {
-        SpanInfo.SpanInfoBuilder builder = SpanInfo.builder();
-        builder.id(span.getId());
-        builder.status(span.getStatus());
-        builder.name(span.getName());
-        builder.startTimestamp(span.getStartTimestamp());
-        builder.endTimestamp(span.getEndTimestamp());
-        builder.beginProcessingTimestamp(span.getBeginProcessingTimestamp());
-        builder.finishProcessingTimestamp(span.getFinishProcessingTimestamp());
-        builder.tags(span.getTags());
-        builder.incomingEndpoint(span.getIncomingEndpoint());
-        builder.incomingHeader(span.getIncomingHeader());
-        builder.outgoingEndpoint(span.getOutgoingEndpoint());
-        builder.outgoingHeader(span.getOutgoingHeader());
-        return builder.build();
+        SpanInfo info = new SpanInfo();
+        info.setId(span.getId());
+        info.setStatus(span.getStatus());
+        info.setName(span.getName());
+        info.setStartTimestamp(span.getStartTimestamp());
+        info.setEndTimestamp(span.getEndTimestamp());
+        info.setBeginProcessingTimestamp(span.getBeginProcessingTimestamp());
+        info.setFinishProcessingTimestamp(span.getFinishProcessingTimestamp());
+        info.setTags(span.getTags());
+        info.setIncomingEndpoint(span.getIncomingEndpoint());
+        info.setIncomingHeader(span.getIncomingHeader());
+        info.setOutgoingEndpoint(span.getOutgoingEndpoint());
+        info.setOutgoingHeader(span.getOutgoingHeader());
+        return info;
     }
 }

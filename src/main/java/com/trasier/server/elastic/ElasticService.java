@@ -6,6 +6,7 @@ import com.trasier.api.server.service.ReadService;
 import com.trasier.api.server.service.WriteService;
 import com.trasier.server.data.ConversationProcessor;
 import com.trasier.server.data.SpanProcessor;
+import jakarta.inject.Singleton;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -29,7 +30,6 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-import javax.inject.Singleton;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.ZoneId;

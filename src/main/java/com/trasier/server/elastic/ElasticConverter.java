@@ -2,11 +2,11 @@ package com.trasier.server.elastic;
 
 import com.trasier.api.server.model.Endpoint;
 import com.trasier.api.server.model.Span;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Base64;
@@ -21,48 +21,50 @@ public class ElasticConverter {
     private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     public static Span convert(SearchHit searchHit) {
-        Span.SpanBuilder builder = Span.builder();
+        Span span = new Span();
 
-        builder.id(searchHit.getSourceAsMap().get("spanId").toString());
-        builder.traceId(searchHit.getSourceAsMap().get("traceId").toString());
-        builder.conversationId(searchHit.getSourceAsMap().get("conversationId").toString());
-        builder.status(searchHit.getSourceAsMap().get("status").toString());
-        builder.name(searchHit.getSourceAsMap().get("name").toString());
+        span.setId(searchHit.getSourceAsMap().get("spanId").toString());
+        span.setTraceId(searchHit.getSourceAsMap().get("traceId").toString());
+        span.setConversationId(searchHit.getSourceAsMap().get("conversationId").toString());
+        span.setStatus(searchHit.getSourceAsMap().get("status").toString());
+        span.setName(searchHit.getSourceAsMap().get("name").toString());
 
         if (searchHit.getSourceAsMap().get("incomingEndpoint.name") != null) {
-            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString());
+            Endpoint endpoint = new Endpoint();
+            endpoint.setName(searchHit.getSourceAsMap().get("incomingEndpoint.name").toString());
             if (searchHit.getSourceAsMap().get("incomingEndpoint.hostname") != null) {
-                endpointBuilder.hostname(searchHit.getSourceAsMap().get("incomingEndpoint.hostname").toString());
+                endpoint.setHostname(searchHit.getSourceAsMap().get("incomingEndpoint.hostname").toString());
             }
             if (searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress") != null) {
-                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress").toString());
+                endpoint.setIpAddress(searchHit.getSourceAsMap().get("incomingEndpoint.ipAddress").toString());
             }
             if (searchHit.getSourceAsMap().get("incomingEndpoint.port") != null) {
-                endpointBuilder.port(searchHit.getSourceAsMap().get("incomingEndpoint.port").toString());
+                endpoint.setPort(searchHit.getSourceAsMap().get("incomingEndpoint.port").toString());
             }
-            builder.incomingEndpoint(endpointBuilder.build());
+            span.setIncomingEndpoint(endpoint);
         }
         if (searchHit.getSourceAsMap().get("outgoingEndpoint.name") != null) {
-            Endpoint.EndpointBuilder endpointBuilder = Endpoint.builder().name(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString());
+            Endpoint endpoint = new Endpoint();
+            endpoint.setName(searchHit.getSourceAsMap().get("outgoingEndpoint.name").toString());
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.hostname") != null) {
-                endpointBuilder.hostname(searchHit.getSourceAsMap().get("outgoingEndpoint.hostname").toString());
+                endpoint.setHostname(searchHit.getSourceAsMap().get("outgoingEndpoint.hostname").toString());
             }
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress") != null) {
-                endpointBuilder.ipAddress(searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress").toString());
+                endpoint.setIpAddress(searchHit.getSourceAsMap().get("outgoingEndpoint.ipAddress").toString());
             }
             if (searchHit.getSourceAsMap().get("outgoingEndpoint.port") != null) {
-                endpointBuilder.port(searchHit.getSourceAsMap().get("outgoingEndpoint.port").toString());
+                endpoint.setPort(searchHit.getSourceAsMap().get("outgoingEndpoint.port").toString());
             }
-            builder.outgoingEndpoint(endpointBuilder.build());
+            span.setOutgoingEndpoint(endpoint);
         }
 
         if (searchHit.getSourceAsMap().get("parentSpanId") != null) {
-            builder.parentId(searchHit.getSourceAsMap().get("parentSpanId").toString());
+            span.setParentId(searchHit.getSourceAsMap().get("parentSpanId").toString());
         }
 
         if(searchHit.getSourceAsMap().get("startTimestamp") != null) {
             try {
-                builder.startTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("startTimestamp").toString()).getTime());
+                span.setStartTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("startTimestamp").toString()).getTime());
             } catch (ParseException e) {
                 throw new IllegalStateException(e);
             }
@@ -70,21 +72,21 @@ public class ElasticConverter {
 
         if(searchHit.getSourceAsMap().get("endTimestamp") != null) {
             try {
-                builder.endTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("endTimestamp").toString()).getTime());
+                span.setEndTimestamp(DATE_FORMAT.parse(searchHit.getSourceAsMap().get("endTimestamp").toString()).getTime());
             } catch (ParseException e) {
                 throw new IllegalStateException(e);
             }
         }
 
         if (searchHit.getSourceAsMap().get("incomingData") != null) {
-            builder.incomingData(searchHit.getSourceAsMap().get("incomingData").toString());
+            span.setIncomingData(searchHit.getSourceAsMap().get("incomingData").toString());
         }
 
         if (searchHit.getSourceAsMap().get("outgoingData") != null) {
-            builder.outgoingData(searchHit.getSourceAsMap().get("outgoingData").toString());
+            span.setOutgoingData(searchHit.getSourceAsMap().get("outgoingData").toString());
         }
 
-        return builder.build();
+        return span;
     }
 
     public XContentBuilder convert(String accountId, String spaceKey, Span span) throws IllegalStateException {
