@@ -6,7 +6,7 @@ services:
 - docker
 
 jdk:
-- oraclejdk11
+- oraclejdk14
 
 script:
 - "./gradlew assemble"

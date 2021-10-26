@@ -2,11 +2,11 @@ package com.trasier.server.elastic;
 
 import com.trasier.api.server.model.Endpoint;
 import com.trasier.api.server.model.Span;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Base64;
