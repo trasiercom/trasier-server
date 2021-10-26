@@ -2,7 +2,7 @@
 
 == Starting locally
 
-image:https://travis-ci.org/trasier/trasier-server.svg?branch=master["Build Status", link="https://travis-ci.org/trasier/trasier-server"]
+image:hhttps://api.travis-ci.com/trasiercom/trasier-server.svg?branch=master["Build Status", link="https://app.travis-ci.com/github/trasiercom/trasier-server"]
 
 === Build with Gradle
 
