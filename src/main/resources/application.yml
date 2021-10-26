@@ -3,6 +3,11 @@ micronaut:
     name: trasier-server
   server:
     port: 8000
+    cors:
+      enabled: true
+      configurations:
+        allowedOrigins:
+          - '*'
 
 trasier.elastic:
   namespace: default

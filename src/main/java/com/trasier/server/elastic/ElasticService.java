@@ -83,11 +83,11 @@ public class ElasticService implements WriteService, ReadService, Closeable {
     @Override
     public Span readSpanById(String accountId, String spaceKey, String conversationId, String traceId, String spanId) {
         SearchRequest searchRequest = new SearchRequest()
-                .indices(createIndexName(accountId, spaceKey))
+                .indices(createIndexNameWildcard(spaceKey))
                 .searchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .indicesOptions(IndicesOptions.lenientExpandOpen());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                .query(createQuery(accountId, spaceKey, conversationId, traceId, spanId))
+                .query(createQuery(spaceKey, conversationId, traceId, spanId))
                 .from(0)
                 .sort("startTimestamp", SortOrder.DESC)
                 .size(MAX_NUMBER_OF_RESULTS)
@@ -116,11 +116,11 @@ public class ElasticService implements WriteService, ReadService, Closeable {
     @Override
     public ConversationInfo readConversationById(String accountId, String spaceKey, String conversationId) {
         SearchRequest searchRequest = new SearchRequest()
-                .indices(createIndexName(accountId, spaceKey))
+                .indices(createIndexNameWildcard(spaceKey))
                 .searchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .indicesOptions(IndicesOptions.lenientExpandOpen());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                .query(createQuery(accountId, spaceKey, conversationId))
+                .query(createQuery(spaceKey, conversationId))
                 .from(0)
                 .sort("startTimestamp", SortOrder.DESC)
                 .size(MAX_NUMBER_OF_RESULTS)
@@ -149,11 +149,11 @@ public class ElasticService implements WriteService, ReadService, Closeable {
     @Override
     public List<ConversationInfo> findByQuery(String accountId, String spaceKey, String query, Long from, Long to) {
         SearchRequest searchRequest = new SearchRequest()
-                .indices(createIndexName(accountId, spaceKey))
+                .indices(createIndexNameWildcard(spaceKey))
                 .searchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .indicesOptions(IndicesOptions.lenientExpandOpen());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                .query(createQuery(accountId, spaceKey, query, from, to))
+                .query(createQuery(spaceKey, query, from, to))
                 .from(0)
                 .sort("startTimestamp", SortOrder.DESC)
                 .size(MAX_NUMBER_OF_RESULTS)
@@ -199,10 +199,9 @@ public class ElasticService implements WriteService, ReadService, Closeable {
         });
     }
 
-    BoolQueryBuilder createQuery(String accountId, String spaceKey, String conversationId) {
+    BoolQueryBuilder createQuery(String spaceKey, String conversationId) {
 
         BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("accountId", accountId));
         appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
         appIdQuery.must(QueryBuilders.matchQuery("conversationId", conversationId));
 
@@ -210,10 +209,9 @@ public class ElasticService implements WriteService, ReadService, Closeable {
                 .must(appIdQuery);
     }
 
-    BoolQueryBuilder createQuery(String accountId, String spaceKey, String conversationId, String traceId, String spanId) {
+    BoolQueryBuilder createQuery(String spaceKey, String conversationId, String traceId, String spanId) {
 
         BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("accountId", accountId));
         appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
         appIdQuery.must(QueryBuilders.matchQuery("conversationId", conversationId));
         appIdQuery.must(QueryBuilders.matchQuery("traceId", traceId));
@@ -223,7 +221,7 @@ public class ElasticService implements WriteService, ReadService, Closeable {
                 .must(appIdQuery);
     }
 
-    BoolQueryBuilder createQuery(String accountId, String spaceKey, String query, Long from, Long to) {
+    BoolQueryBuilder createQuery(String spaceKey, String query, Long from, Long to) {
         Calendar calendar = Calendar.getInstance(ElasticService.TIME_ZONE);
         calendar.setTimeInMillis(from);
         Date fromDate = calendar.getTime();
@@ -232,7 +230,6 @@ public class ElasticService implements WriteService, ReadService, Closeable {
         RangeQueryBuilder timestampQuery = QueryBuilders.rangeQuery("startTimestamp").gte(fromDate).lte(toDate);
 
         BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("accountId", accountId));
         appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
 
         return QueryBuilders.boolQuery()
@@ -250,6 +247,10 @@ public class ElasticService implements WriteService, ReadService, Closeable {
 
     String createIndexName(String accountId, String spaceKey) {
         return configuration.getNamespace() + "_" + accountId + "_" + spaceKey;
+    }
+
+    String createIndexNameWildcard(String spaceKey) {
+        return configuration.getNamespace() + "_" + "*" + "_" + spaceKey;
     }
 
     @Override
