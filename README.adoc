@@ -23,3 +23,5 @@ Run the application:
 `docker-compose up`
 
 Configure the trasier-client to send requests to http://localhost:8000/api/accounts/{accountId}/spaces/{spaceid}/spans
+
+See example configuration: https://github.com/trasiercom/springboot-example/blob/trasier-live/springboot-offer/src/main/resources/application.yml#L9
