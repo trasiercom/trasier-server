@@ -1,8 +1,10 @@
 version: '2.2'
 services:
   tra01:
-    image: trasier/trasier-server:0.2
+    image: docker.io/trasier/trasier-server:latest
     container_name: tra01
+    environment:
+      - trasier.elastic.hosts=es01
     ports:
       - 8000:8000
     networks:

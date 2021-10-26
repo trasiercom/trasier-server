@@ -3,7 +3,7 @@ plugins {
     id "application"
 }
 
-version "0.2"
+version "0.3"
 group "com.trasier.server"
 
 repositories {
