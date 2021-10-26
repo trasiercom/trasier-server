@@ -1,8 +1,10 @@
 = Trasier Server
 
+== Starting locally
+
 image:https://travis-ci.org/trasier/trasier-server.svg?branch=master["Build Status", link="https://travis-ci.org/trasier/trasier-server"]
 
-== Build with Gradle
+=== Build with Gradle
 
 Use the following command to build _Trasier Server_:
 
@@ -10,15 +12,14 @@ Use the following command to build _Trasier Server_:
 
 On success, the result will be available in the `build/libs` directory.
 
-== Run _Trasier Server_
+=== Run _Trasier Server_
 
 Run the application:
 
  ./gradlew run
 
+== Starting with docker
 
-== Test _Trasier Server_
+`docker-compose up`
 
-Test the application:
-
-  ./gradlew test
+Configure the trasier-client to send requests to http://localhost:8000/api/accounts/{accountId}/spaces/{spaceid}/spans
