@@ -10,6 +10,16 @@ services:
     networks:
       - trasier
 
+  tra02:
+    image: docker.io/trasier/trasier-ui:unauth
+    container_name: tra02
+    volumes:
+      - ./config.json:/usr/share/nginx/html/assets/config/config.json
+    ports:
+      - 4200:4200
+    networks:
+      - trasier
+
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     container_name: es01

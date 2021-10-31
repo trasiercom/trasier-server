@@ -25,8 +25,8 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -200,25 +200,17 @@ public class ElasticService implements WriteService, ReadService, Closeable {
     }
 
     BoolQueryBuilder createQuery(String spaceKey, String conversationId) {
-
-        BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
-        appIdQuery.must(QueryBuilders.matchQuery("conversationId", conversationId));
-
         return QueryBuilders.boolQuery()
-                .must(appIdQuery);
+            .must(QueryBuilders.matchQuery("spaceKey", spaceKey).operator(Operator.AND))
+            .must(QueryBuilders.matchQuery("conversationId", conversationId).operator(Operator.AND));
     }
 
     BoolQueryBuilder createQuery(String spaceKey, String conversationId, String traceId, String spanId) {
-
-        BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
-        appIdQuery.must(QueryBuilders.matchQuery("conversationId", conversationId));
-        appIdQuery.must(QueryBuilders.matchQuery("traceId", traceId));
-        appIdQuery.must(QueryBuilders.matchQuery("spanId", spanId));
-
         return QueryBuilders.boolQuery()
-                .must(appIdQuery);
+            .must(QueryBuilders.matchQuery("spaceKey", spaceKey).operator(Operator.AND))
+            .must(QueryBuilders.matchQuery("conversationId", conversationId).operator(Operator.AND))
+            .must(QueryBuilders.matchQuery("traceId", traceId).operator(Operator.AND))
+            .must(QueryBuilders.matchQuery("spanId", spanId).operator(Operator.AND));
     }
 
     BoolQueryBuilder createQuery(String spaceKey, String query, Long from, Long to) {
@@ -227,15 +219,11 @@ public class ElasticService implements WriteService, ReadService, Closeable {
         Date fromDate = calendar.getTime();
         calendar.setTimeInMillis(to);
         Date toDate = calendar.getTime();
-        RangeQueryBuilder timestampQuery = QueryBuilders.rangeQuery("startTimestamp").gte(fromDate).lte(toDate);
-
-        BoolQueryBuilder appIdQuery = QueryBuilders.boolQuery();
-        appIdQuery.must(QueryBuilders.matchQuery("spaceKey", spaceKey));
 
         return QueryBuilders.boolQuery()
+                .must(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("spaceKey", spaceKey).operator(Operator.AND)))
                 .must(QueryBuilders.queryStringQuery(query))
-                .must(appIdQuery)
-                .must(timestampQuery);
+                .must(QueryBuilders.rangeQuery("startTimestamp").gte(fromDate).lte(toDate));
     }
 
     IndexRequest createIndexRequest(String accountId, String spaceKey, Span span) {

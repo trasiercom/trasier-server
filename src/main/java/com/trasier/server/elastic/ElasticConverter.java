@@ -2,6 +2,7 @@ package com.trasier.server.elastic;
 
 import com.trasier.api.server.model.Endpoint;
 import com.trasier.api.server.model.Span;
+import com.trasier.server.data.SnappyUtils;
 import jakarta.inject.Singleton;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -9,7 +10,6 @@ import org.elasticsearch.search.SearchHit;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -135,11 +135,11 @@ public class ElasticConverter {
             }
 
             if (span.getIncomingData() != null) {
-                builder.field("incomingData", new String(Base64.getDecoder().decode(span.getIncomingData())));
+                builder.field("incomingData", SnappyUtils.decodeUncompressData(span.getIncomingData()));
             }
 
             if (span.getOutgoingData() != null) {
-                builder.field("outgoingData", new String(Base64.getDecoder().decode(span.getOutgoingData())));
+                builder.field("outgoingData", SnappyUtils.decodeUncompressData(span.getOutgoingData()));
             }
 
             return builder.endObject();
