@@ -2,6 +2,6 @@
   "env": "dev",
   "production": false,
   "mock": false,
-  "readerHttpsUrl": "http://tra01:8000",
-  "webBackendHttpsUrl": "http://tra01:8000/"
+  "readerHttpsUrl": "http://localhost:8000",
+  "webBackendHttpsUrl": "http://localhost:8000/"
 }
